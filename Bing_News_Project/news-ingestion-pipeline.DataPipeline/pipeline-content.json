@@ -1,0 +1,131 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "RestSource",
+            "requestMethod": "GET",
+            "additionalHeaders": {
+              "Ocp-Apim-Subscription-Key": "69f5cd5f14af487394fd2ca037788fca"
+            },
+            "paginationRules": {
+              "supportRFC5988": "true"
+            },
+            "httpRequestTimeout": "00:01:40",
+            "requestInterval": "00.00:00:00.010",
+            "datasetSettings": {
+              "type": "RestResource",
+              "typeProperties": {
+                "relativeUrl": {
+                  "value": "?q=@{pipeline().parameters.search_term}&count=100&freshness=Day&mkt=en-US",
+                  "type": "Expression"
+                }
+              },
+              "schema": [],
+              "externalReferences": {
+                "connection": "b618fe59-a5e0-4c1b-9b21-fb1dce9d6869"
+              },
+              "annotations": []
+            }
+          },
+          "sink": {
+            "type": "JsonSink",
+            "storeSettings": {
+              "type": "LakehouseWriteSettings"
+            },
+            "formatSettings": {
+              "type": "JsonWriteSettings"
+            },
+            "datasetSettings": {
+              "type": "Json",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation",
+                  "fileName": "bing-latest-news.json"
+                }
+              },
+              "schema": {},
+              "linkedService": {
+                "properties": {
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "artifactId": "34277513-e15e-47fd-b9d9-0a70f157d93f",
+                    "workspaceId": "00000000-0000-0000-0000-000000000000",
+                    "rootFolder": "Files"
+                  },
+                  "annotations": []
+                },
+                "name": "bing_lake_db"
+              },
+              "annotations": []
+            }
+          },
+          "enableStaging": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Copy latest news",
+        "dependsOn": []
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "307c28bd-e736-4e26-84e5-fd85c566bec6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Data Transformation",
+        "dependsOn": [
+          {
+            "activity": "Copy latest news",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "000624f9-9c30-4792-b042-dddceff4f53d",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Sentimental Analysis",
+        "dependsOn": [
+          {
+            "activity": "Data Transformation",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "search_term": {
+        "type": "string",
+        "defaultValue": "latest news"
+      }
+    }
+  }
+}
