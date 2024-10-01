@@ -24,6 +24,8 @@ Este proyecto consiste en la construcción de un flujo de datos que extrae notic
 - **API de Bing**: Para la extracción de las noticias en tiempo real.
 - **Data Lake**: Para el almacenamiento de datos estructurados y no estructurados.
 
+![Project Structure](https://github.com/user-attachments/assets/7258e837-a3af-4f12-9877-1cd0e5a3e5b6)
+
 ## Componentes Principales
 
 1. **Extracción de datos (API de Bing)**: Se utiliza la API de Bing para obtener un conjunto de noticias recientes. Estas noticias incluyen información como el título, descripción, fuente, fecha de publicación y otros metadatos relevantes.
